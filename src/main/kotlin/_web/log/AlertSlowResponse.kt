@@ -1,7 +1,13 @@
 package com.wafflestudio.seminar.spring2023._web.log
 
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.postForObject
+import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
 interface AlertSlowResponse {
@@ -28,9 +34,40 @@ data class SlowResponse(
  */
 @Component
 class AlertSlowResponseImpl : AlertSlowResponse {
+
+    private val url = "https://slack.com/api/chat.postMessage"
+    private val token = "xoxb-5766809406786-6098325284464-Jzfs2DxOfD7DzCpccZhG6EfG"
+    private val channel = "#spring-assignment-channel"
+
     private val logger = LoggerFactory.getLogger(javaClass)
+    private val threadPool = Executors.newFixedThreadPool(1)
+
+    private val restTemplate = RestTemplate()
+
+    private val httpHeaders = HttpHeaders().apply {
+        set("Authorization", "Bearer $token")
+        contentType = MediaType.APPLICATION_JSON
+    }
 
     override operator fun invoke(slowResponse: SlowResponse): Future<Boolean> {
-        TODO()
+        val msg = "[API-RESPONSE] ${slowResponse.method} ${slowResponse.path}, took ${slowResponse.duration}ms, SeonghaeJo"
+        logger.warn(msg)
+        return threadPool.submit<Boolean> {
+            val httpEntity = HttpEntity(
+                SlackRequestPayload(
+                    text = msg, channel = channel
+                ), httpHeaders
+            )
+            val res= restTemplate.postForObject<SlackResponse>(
+                url, httpEntity
+            )
+            res.ok
+        }
     }
 }
+
+data class SlackResponse(val ok: Boolean)
+data class SlackRequestPayload(
+    val text: String,
+    val channel: String,
+)
