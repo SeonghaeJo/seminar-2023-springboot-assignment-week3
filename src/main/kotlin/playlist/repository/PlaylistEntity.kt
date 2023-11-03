@@ -8,6 +8,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
+import jakarta.persistence.Version
 
 @Entity(name = "playlists")
 class PlaylistEntity(
@@ -17,10 +18,11 @@ class PlaylistEntity(
     val title: String,
     val subtitle: String,
     val image: String,
+    @Version // Optimistic Shared Lock
     var viewCnt: Int,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     val group: PlaylistGroupEntity,
     @OneToMany(mappedBy = "playlist")
-    val songs: List<PlaylistSongEntity>
+    val songs: List<PlaylistSongEntity>,
 )

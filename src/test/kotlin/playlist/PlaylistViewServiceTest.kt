@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDateTime
+import java.util.concurrent.Future
 
 @SpringBootTest
 class PlaylistViewServiceTest @Autowired constructor(
@@ -109,5 +110,20 @@ class PlaylistViewServiceTest @Autowired constructor(
 
         // reset playlistViews
         playlistViewRepository.deleteAll()
+    }
+
+    @Test
+    fun `Lazy update 확인` () {
+        val futures: MutableList<Future<Boolean>> = mutableListOf()
+        for (i in 1L..6L) {
+            futures.add(playlistViewService.create(playlistId = 1L, userId = i))
+            println(playlistRepository.findById(1L).get().viewCnt) // print 0
+        }
+        futures[0].get()
+        println(playlistRepository.findById(1L).get().viewCnt) // print 2 (maybe random)
+        Thread.sleep(1L)
+        println(playlistRepository.findById(1L).get().viewCnt) // print 4 (maybe random)
+        Thread.sleep(100L)
+        println(playlistRepository.findById(1L).get().viewCnt) // print 6 (all task completed, maybe random)
     }
 }
