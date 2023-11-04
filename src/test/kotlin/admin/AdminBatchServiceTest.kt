@@ -30,7 +30,10 @@ class AdminBatchServiceTest @Autowired constructor(
 
         adminBatchService.insertAlbums(albumInfos)
 
-        assertThat((System.currentTimeMillis() - start)).isLessThan(500)
+        val elapsed = System.currentTimeMillis() - start
+        println("Processing time : $elapsed")
+
+        assertThat(elapsed).isLessThan(500)
 
         TransactionTemplate(txManager).executeWithoutResult {
             albumInfos.forEach { albumInfo ->

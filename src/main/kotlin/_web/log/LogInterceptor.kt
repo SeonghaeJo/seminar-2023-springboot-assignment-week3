@@ -16,7 +16,13 @@ class LogInterceptor(
     private val logSlowResponse: AlertSlowResponse,
 ) : HandlerInterceptor {
 
+    private val startTime = ThreadLocal<Long>()
+    private val requestPath = ThreadLocal<String>()
+
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+        startTime.set(System.currentTimeMillis())
+        requestPath.set(request.servletPath)
+        logRequest.invoke(Request(request.method, request.servletPath))
         // FIXME
         return super.preHandle(request, response, handler)
     }
@@ -27,6 +33,13 @@ class LogInterceptor(
         handler: Any,
         ex: Exception?,
     ) {
+        val duration = System.currentTimeMillis() - startTime.get()
+        val path = requestPath.get()
+        if (duration >= 3000L) {
+            logSlowResponse.invoke(SlowResponse(
+                method = request.method, path = path, duration = duration
+            ))
+        }
         // FIXME
         super.afterCompletion(request, response, handler, ex)
     }

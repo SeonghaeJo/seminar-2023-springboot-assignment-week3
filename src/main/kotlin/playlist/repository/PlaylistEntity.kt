@@ -8,6 +8,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
+import jakarta.persistence.Version
 
 @Entity(name = "playlists")
 class PlaylistEntity(
@@ -22,5 +23,5 @@ class PlaylistEntity(
     @JoinColumn(name = "group_id")
     val group: PlaylistGroupEntity,
     @OneToMany(mappedBy = "playlist")
-    val songs: List<PlaylistSongEntity>
+    val songs: List<PlaylistSongEntity>,
 )
