@@ -120,10 +120,10 @@ class PlaylistViewServiceTest @Autowired constructor(
             println(playlistRepository.findById(1L).get().viewCnt) // print 0
         }
         futures[0].get()
-        println(playlistRepository.findById(1L).get().viewCnt) // print 2 (maybe random)
+        println(playlistRepository.findById(1L).get().viewCnt) // print 2 (random)
         Thread.sleep(1L)
-        println(playlistRepository.findById(1L).get().viewCnt) // print 4 (maybe random)
+        println(playlistRepository.findById(1L).get().viewCnt) // print 3 or 4 (random)
         Thread.sleep(100L)
-        println(playlistRepository.findById(1L).get().viewCnt) // print 6 (all task completed, maybe random)
+        println(playlistRepository.findById(1L).get().viewCnt) // print 6 (all task completed, random)
     }
 }

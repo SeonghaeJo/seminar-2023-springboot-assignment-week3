@@ -18,7 +18,6 @@ class PlaylistEntity(
     val title: String,
     val subtitle: String,
     val image: String,
-    @Version // Optimistic Shared Lock
     var viewCnt: Int,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")

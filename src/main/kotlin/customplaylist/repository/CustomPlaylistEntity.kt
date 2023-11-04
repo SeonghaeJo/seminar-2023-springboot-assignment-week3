@@ -1,11 +1,6 @@
 package com.wafflestudio.seminar.spring2023.customplaylist.repository
 
-import jakarta.persistence.CascadeType
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
+import jakarta.persistence.*
 
 @Entity(name = "custom_playlists")
 class CustomPlaylistEntity(
@@ -16,5 +11,6 @@ class CustomPlaylistEntity(
     var title: String,
     @OneToMany(mappedBy = "customPlaylist", cascade = [CascadeType.ALL], orphanRemoval = true)
     val songs: MutableList<CustomPlaylistSongEntity> = mutableListOf(),
+    @Version // Versioning for Optimistic Shared Lock
     var songCnt: Int = 0,
 )

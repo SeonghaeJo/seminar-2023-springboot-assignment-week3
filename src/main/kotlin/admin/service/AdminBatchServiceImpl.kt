@@ -38,19 +38,21 @@ class AdminBatchServiceImpl (
 
     private fun insertAlbumInfo(albumInfo: BatchAlbumInfo): Boolean {
         val artistEntity = getArtistEntityByName(albumInfo.artist)
-        val albumEntity = AlbumEntity(
-            title = albumInfo.title,
-            image = albumInfo.image,
-            artist = artistEntity
-        )
-        albumRepository.save(albumEntity)
-        for (songInfo in albumInfo.songs) {
-            val songEntity = SongEntity(
-                title = songInfo.title,
-                duration = songInfo.duration,
-                album = albumEntity,
+        val albumEntity = albumRepository.save(
+            AlbumEntity(
+                title = albumInfo.title,
+                image = albumInfo.image,
+                artist = artistEntity
             )
-            songRepository.save(songEntity)
+        )
+        for (songInfo in albumInfo.songs) {
+            val songEntity = songRepository.save(
+                SongEntity(
+                    title = songInfo.title,
+                    duration = songInfo.duration,
+                    album = albumEntity,
+                )
+            )
             for (artistName in songInfo.artists) {
                 songEntity.artists.add(SongArtistEntity(
                     song = songEntity, artist = getArtistEntityByName(artistName)
